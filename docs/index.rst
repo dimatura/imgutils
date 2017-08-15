@@ -10,8 +10,6 @@ Contents:
    installation
    usage
    modules
-   contributing
-   history
 
 Indices and tables
 ==================
