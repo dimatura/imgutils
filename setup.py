@@ -26,7 +26,7 @@ setup(
     name='imgutils',
     version='0.1.0',
     description="Miscellaneous image utility functions.",
-    long_description=readme + '\n\n' + history,
+    long_description=readme,
     author="Daniel Maturana",
     author_email='dimatura@cmu.edu',
     url='https://github.com/dimatura/imgutils',

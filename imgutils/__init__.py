@@ -7,5 +7,7 @@ __email__ = 'dimatura@cmu.edu'
 __version__ = '0.1.0'
 
 
-from .remapping import *
+from .imgdims import *
 from .palette import *
+from .pil_utils import *
+from .remapping import *

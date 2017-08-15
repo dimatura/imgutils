@@ -1,3 +1,7 @@
+
+__all__ = ['ImgDims']
+
+
 import math
 
 
@@ -5,6 +9,41 @@ class ImgDims(object):
     """
     manage image dimensions.
     TODO: look at vigra python binding tag system.
+
+    >>> d = ImgDims(320, 240)
+    >>> d.width
+    320
+    >>> d.height
+    240
+    >>> d = ImgDims.from_shape([240, 320])
+    >>> d
+    ImgDims(width=320, height=240)
+    >>> d2 = ImgDims(10, 20)
+    >>> d + d2
+    ImgDims(width=330, height=260)
+    >>> d*2
+    ImgDims(width=640, height=480)
+    >>> 2*d
+    ImgDims(width=640, height=480)
+    >>> d*2 == ImgDims(640, 480)
+    True
+    >>> d == ImgDims(640, 480)
+    False
+    >>> d.rows
+    240
+    >>> d.cols
+    320
+    >>> d/2
+    ImgDims(width=160, height=120)
+    >>> df = ImgDims(width=320.3, height=239.8)
+    >>> df.round()
+    ImgDims(width=320, height=240)
+    >>> df.floor()
+    ImgDims(width=320, height=239)
+    >>> d.tolist()
+    [320, 240]
+    >>> d.toshape()
+    (240, 320)
     """
 
     def __init__(self, width=0, height=0):
@@ -116,3 +155,13 @@ class ImgDims(object):
 
     def tolist(self):
         return [self.width, self.height]
+
+    def toshape(self):
+        return (self.height, self.width)
+
+if __name__ == '__main__':
+    import doctest
+    flags = doctest.REPORT_NDIFF
+    fail, total = doctest.testmod(optionflags=flags)
+    print("{} failures out of {} tests".format(fail, total))
+
