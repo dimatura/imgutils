@@ -4,7 +4,7 @@
 
 __author__ = """Daniel Maturana"""
 __email__ = 'dimatura@cmu.edu'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 from .imgdims import *
