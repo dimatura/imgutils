@@ -123,15 +123,16 @@ class ImgDims(object):
         self.height /= other
         return self
 
-
     def __eq__(self, other):
         return other.width == self.width and other.height == self.height
 
+    def __iter__(self):
+        yield self.width
+        yield self.height
 
     @property
     def rows(self):
         return self.height
-
 
     @property
     def cols(self):

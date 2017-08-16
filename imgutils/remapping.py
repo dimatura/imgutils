@@ -10,7 +10,7 @@ __all__ = ['rgb_image_to_label_image',
 
 def rgb_image_to_label_image(img, mapping, default=0):
     """ Map RGB image to label image.
-    img: HxWx3 uint8 image
+    img: HxWx3 uint8 image (numpy array)
     mapping: dictionary of (r,g,b) -> int
     default: label to use for keys not in mapping
     """
@@ -52,7 +52,7 @@ def label_image_to_rgb_image(label_img, mapping, default=[255, 255, 255]):
     """
     lbl_max = np.max(mapping.keys())
     label_tab = np.empty((lbl_max+1, 3), dtype='u1')
-    label_tab.fill(default)
+    label_tab[:] = default
     for lbl_src, lbl_dst in mapping.iteritems():
         label_tab[lbl_src] = lbl_dst
     return label_tab[label_img]
@@ -70,3 +70,11 @@ def remap_labels(label_img, mapping, default=-1):
     for lbl_src, lbl_dst in mapping.iteritems():
         label_tab[lbl_src] = lbl_dst
     return label_tab[label_img]
+
+
+if __name__ == '__main__':
+    import doctest
+    flags = doctest.REPORT_NDIFF
+    fail, total = doctest.testmod(optionflags=flags)
+    print("{} failures out of {} tests".format(fail, total))
+
