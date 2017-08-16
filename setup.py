@@ -9,22 +9,21 @@ with open('README.rst') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    # TODO: put package requirements here
+    'numpy',
+    'pillow'
 ]
 
 setup_requirements = [
-    'pytest-runner',
-    # TODO(dimatura): put setup requirements (distutils extensions, etc.) here
+    # 'pytest-runner',
 ]
 
 test_requirements = [
-    'pytest',
-    # TODO: put package test requirements here
+    # 'pytest',
 ]
 
 setup(
     name='imgutils',
-    version='0.1.0',
+    version='0.1.1',
     description="Miscellaneous image utility functions.",
     long_description=readme,
     author="Daniel Maturana",
@@ -44,10 +43,10 @@ setup(
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        # 'Programming Language :: Python :: 3',
+        # 'Programming Language :: Python :: 3.3',
+        # 'Programming Language :: Python :: 3.4',
+        # 'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',
     tests_require=test_requirements,
