@@ -192,10 +192,11 @@ def crop_center(img, img_wh):
 #     draw.text(pos, text, font=font, fill=color)
 
 
-def draw_bbox(img, bb, color=None):
+def draw_bbox(img, bb, color=None, width=1):
     """ draw bounding on image in-place.
      :parameters:
         - bb: Sequence of either [(x0, y0), (x1, y1)] or [x0, y0, x1, y1]
+        x is cols, y is rows
 
     >>> img = Image.new('L', (128, 128))
     >>> draw_bbox(img, ((50, 50), (50+20, 50+20)))
@@ -212,7 +213,19 @@ def draw_bbox(img, bb, color=None):
         elif img.mode == 'RGBA':
             color = (255, 0, 0, 255)
     draw = ImageDraw.Draw(img)
-    draw.rectangle(bb, fill=None, outline=color)
+    if width <= 1:
+        draw.rectangle(bb, fill=None, outline=color)
+    else:
+        if len(bb)==4:
+            x0, y0, x1, y1 = bb
+        elif len(bb)==2:
+            (x0, y0), (x1, y1) = bb
+        else:
+            raise ValueError('bb should be two 2-tuples or one 4-tuple')
+        draw.line((x0, y0, x1, y0), fill=color, width=width)
+        draw.line((x1, y0, x1, y1), fill=color, width=width)
+        draw.line((x1, y1, x0, y1), fill=color, width=width)
+        draw.line((x0, y1, x0, y0), fill=color, width=width)
 
 
 def add_border(img, px, color=None):
