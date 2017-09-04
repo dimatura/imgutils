@@ -23,7 +23,7 @@ test_requirements = [
 
 setup(
     name='imgutils',
-    version='0.1.1',
+    version='0.1.2',
     description="Miscellaneous image utility functions.",
     long_description=readme,
     author="Daniel Maturana",
