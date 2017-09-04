@@ -1,18 +1,21 @@
 from __future__ import print_function
 
 
-__all__ = ['smart_resize',
-           'letterbox_resize',
-           'trim_percentage',
-           'crop_center',
-           'add_border',
-           'draw_bbox',
-           'hstack',
-           'vstack',
-           'dstack_rgb',
-           'square_montage',
-           'montage']
-
+__all__ = [
+    'add_border',
+    'crop_center',
+    'draw_bbox',
+    'dstack_rgb',
+    'hstack',
+    'images_to_tensor4',
+    'tensor4_to_images',
+    'letterbox_resize',
+    'montage',
+    'smart_resize',
+    'square_montage',
+    'trim_percentage',
+    'vstack',
+]
 
 
 import math
@@ -47,12 +50,12 @@ def letterbox_resize(img, img_wh, bg=None, interp=None):
     order to keep aspect ratio.
 
     :parameters:
-        - img: input Image
-        - img_wh: desired width, height
-        - bg: int or tuple(int, int, int) or tuple(int, int, int, int)
-            color for background as rgb int tuple
-        - interp: int
-            interpolation code from PIL.Image
+        - `img`: Input Image
+        - `img_wh`: Desired width, height
+        - `bg`: int or `tuple(int, int, int)` or `tuple(int, int, int, int)`
+           Color for background as rgb int tuple
+        - `interp`: int
+           Interpolation code from PIL.Image
 
     >>> img = Image.new('L', (128, 128))
     >>> imgr = letterbox_resize(img, (20, 20))
@@ -132,7 +135,7 @@ def smart_resize(img, img_wh, interp=None):
 
 def trim_percentage(img, percentage):
     """
-    trim percentage off images
+    Trim percentage of pixels off images
 
     :parameters:
         - percentage: int
@@ -153,8 +156,12 @@ def trim_percentage(img, percentage):
 
 def crop_center(img, img_wh):
     """
-    crop box of size img_wh from center of image.
+    Crop box of size img_wh from center of image.
     assumes box is smaller than image.
+
+    :parameters:
+        - `img`: Input Image
+        - `img_wh`: Desired width, height
 
     >>> img = Image.new('L', (128, 128))
     >>> imgc = crop_center(img, (50, 50))
@@ -277,7 +284,7 @@ def hstack(images, variable_width=True):
 
 
 def vstack(images, variable_height=True):
-    """ stack PIL images sideways.
+    """ Stack PIL images sideways.
     unless variable_height is False, height equals max height of all images.
     """
 
@@ -297,7 +304,7 @@ def vstack(images, variable_height=True):
 
 
 def dstack_rgb(images):
-    """ stack PIL images in depth, as RGB channels.
+    """ Stack PIL images in depth, as RGB channels.
     """
     # TODO auto fill-in None
     if not len(images) == 3:
@@ -307,7 +314,7 @@ def dstack_rgb(images):
 
 
 def square_montage(images, resize_mode='center', bg=None, border_color=None):
-    """ create a square (as possible) montage. squareness is determined
+    """ Create a square (as possible) montage. squareness is determined
     in terms of (rows, cols), not final montage size.
 
     :parameters:
@@ -363,9 +370,57 @@ def square_montage(images, resize_mode='center', bg=None, border_color=None):
     return montage
 
 
+def images_to_tensor4(images, order='nchw'):
+    """ Convert sequence of PIL images to 4D ndarray tensor.
+    Dims will be (N, C, H, W) or (N, H, W, C)
+    """
+    if not _all_equal([img.mode for img in images]):
+        raise ValueError('all images must have same mode')
+    if not _all_equal([img.size for img in images]):
+        raise ValueError('all images must have same size')
+    if len(images)==0:
+        raise ValueError('no images in sequence')
+    n = len(images)
+    if images[0].mode == 'RGB':
+        c = 3
+    elif images[0].mode == 'RGBA':
+        c = 4
+    elif images[0].mode == 'L':
+        c = 1
+    else:
+        raise ValueError('unsupported image mode')
+    w = images[0].size[0]
+    h = images[0].size[1]
+    if order == 'nchw':
+        out = np.empty((n, c, h, w), dtype='u1')
+    elif order == 'nhwc':
+        out = np.empty((n, h, w, c), dtype='u1')
+    else:
+        raise ValueError('unknown order, should be nchw or nhwc')
+    for i, img in enumerate(images):
+        imga = np.asarray(img)
+        if order == 'nchw':
+            imga = imga.transpose((2, 0, 1))
+        out[i] = imga
+    return out
+
+
+def tensor4_to_images(tensor, order='nchw'):
+    """ Convert a 4D ndarray to a list of images. """
+    out = []
+    for i in range(tensor.shape[0]):
+        img = tensor[i]
+        if order == 'nchw':
+            img = img.transpose((1, 2, 0))
+        pimg = Image.fromarray(img)
+        out.append(pimg)
+    return out
+
+
 def montage(images,
             nrows, ncols,
-            margins_ltrb=(0, 0, 0, 0)):
+            margins_ltrb=(0, 0, 0, 0),
+            padding=1):
     """
     :parameters:
         - images: sequence
@@ -379,35 +434,43 @@ def montage(images,
         - padding: int
             padding between images
     """
-    imgh, imgw = img_height_width
+    images = list(images)
+    if len(images) == 0:
+        raise ValueError('No images given')
+    imgw, imgh = images[0].size
+
+    if not _all_equal([img.size for img in images]):
+        raise ValueError('all images should be same size')
+
     (marl, mart, marr, marb) = margins_ltrb
 
     # calculate the size of the output image, based on the
     # photo thumb sizes, margins, and padding
-    marw = marl+marr
-    marh = mart+marb
+    marw = marl + marr
+    marh = mart + marb
 
-    padw = (ncols-1)*padding
-    padh = (nrows-1)*padding
-    isize = (ncols*photow+marw+padw,nrows*photoh+marh+padh)
+    padw = (ncols-1) * padding
+    padh = (nrows-1) * padding
+    isize = ((ncols * imgw) + marw + padw,
+             (nrows * imgh) + marh + padh)
 
     # Create the new image. The background doesn't have to be white
-    white = (255,255,255)
-    inew = Image.new('RGB',isize,white)
+    white = (255, 255, 255)
+    inew = Image.new('RGB', isize, white)
 
     # Insert each thumb:
     for irow in range(nrows):
         for icol in range(ncols):
-            left = marl + icol*(photow+padding)
-            right = left + photow
-            upper = mart + irow*(photoh+padding)
-            lower = upper + photoh
-            bbox = (left,upper,right,lower)
+            left = marl + icol * (imgw + padding)
+            right = left + imgw
+            upper = mart + irow * (imgh + padding)
+            lower = upper + imgh
+            bbox = (left, upper, right, lower)
             try:
-                img = imgs.pop(0)
-            except:
+                img = images.pop(0)
+            except IndexError:
                 break
-            inew.paste(img,bbox)
+            inew.paste(img, bbox)
     return inew
 
 

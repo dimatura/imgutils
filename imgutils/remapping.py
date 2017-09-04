@@ -10,9 +10,11 @@ __all__ = ['rgb_image_to_label_image',
 
 def rgb_image_to_label_image(img, mapping, default=0):
     """ Map RGB image to label image.
-    img: HxWx3 uint8 image (numpy array)
-    mapping: dictionary of (r,g,b) -> int
-    default: label to use for keys not in mapping
+
+    :parameters:
+        - img: HxWx3 uint8 image (numpy array)
+        - mapping: dictionary of (r,g,b) -> int
+        - default: label to use for keys not in mapping
     """
     if img.ndim != 3:
         raise ValueError('img must be HxWx3 matrix')
@@ -46,9 +48,11 @@ def rgb_image_to_label_image(img, mapping, default=0):
 
 def label_image_to_rgb_image(label_img, mapping, default=[255, 255, 255]):
     """ Map integer label image to rgb image.
-    label_img: int image
-    mapping: dictionary of int -> (r, g, b)
-    default: default rgb
+
+    :parameters:
+        - label_img: int image
+        - mapping: dictionary of int -> (r, g, b)
+        - default: default rgb
     """
     lbl_max = np.max(mapping.keys())
     label_tab = np.empty((lbl_max+1, 3), dtype='u1')
@@ -60,9 +64,11 @@ def label_image_to_rgb_image(label_img, mapping, default=[255, 255, 255]):
 
 def remap_labels(label_img, mapping, default=-1):
     """ Map integer labels to integer labels.
-    label_img: int image
-    mapping: dictionary of int -> int
-    default: default int
+
+    :parameters:
+        - label_img: int image
+        - mapping: dictionary of int -> int
+        - default: default int
     """
     lbl_max = np.max(mapping.keys())
     label_tab = np.empty((lbl_max+1), dtype='int64')

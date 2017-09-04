@@ -7,9 +7,11 @@ __all__ = ['add_color_palette']
 
 
 def add_color_palette(img, class_id_to_rgb):
-    """ add color palette to 8-bit PIL image.
-    class_id_to_rgb colors must be in (0, 255) range.
-    can be list or dict.
+    """ Add color palette to 8-bit PIL image.
+
+    :parameters:
+        - `class_id_to_rgb`: dict or list.
+        Colors must be integers in (0, 255) range.
     """
     if not isinstance(img, Image.Image):
         img = Image.fromarray(img)
