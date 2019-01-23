@@ -1,3 +1,13 @@
+# imgutils
+
+**Author**: Daniel Maturana (dimatura@gmail.com)
+
+Miscellaneous image utility functions.
+
+This is a work in progress.
+
+## License
+
 [This software is BSD licensed.](http://opensource.org/licenses/BSD-3-Clause)
 
 Copyright (c) 2015-2019, Carnegie Mellon University
